@@ -1,4 +1,4 @@
-To run the model (ModelFinalDoubleLine.ipynb) you have to download also the dictionaty (septa.py) and the original sequence (sps_with_extraction_sliced_quads.json).
+To run the model (ModelFinalDoubleLine.ipynb) you have to download the dictionaty (septa.py) and the original sequence (sps_with_extraction_sliced_quads.json).
 
 In this model a line is created for the circulating beam and there are some particles that get extracted if they hit an aperture(septum = xt.LimitRect(...)).
 
