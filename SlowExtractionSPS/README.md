@@ -1,7 +1,6 @@
-The file SPSExtractionPlots.ipynb is reccomended for a better simulation of the SX
+The file SPSExtractionPlots.ipynb is reccomended for a better simulation of the SX.
 
-The model (ModelFinalDoubleLine.ipynb) needs the dictionaty (septa.py) and the original sequence (sps_with_extraction_sliced_quads.json).
+The model (ModelFinalDoubleLine.ipynb) needs the dictionaty (septa.py).
 
-In this model a line is created for the circulating beam and there are some particles that get extracted if they hit an aperture(septum = xt.LimitRect(...)).
 
 
