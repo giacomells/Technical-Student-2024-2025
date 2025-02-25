@@ -51,7 +51,7 @@ class SeptumInteraction:
 
 
 # install the 5 zs
-def install_septa(line, install_zs=True, septum_aperture_size=68e-3):
+def install_septa(line, install_zs=True, septum_aperture_size=68e-3):#
     septa_names_with_apertures = []
 
     if install_zs:
@@ -61,20 +61,19 @@ def install_septa(line, install_zs=True, septum_aperture_size=68e-3):
             zs = xt.BeamInteraction(
                 length=0.0,
                 interaction_process=SeptumInteraction(
-                    blade_position=septum_aperture_size, thickness=0.3e-3, kick=0.440e-3 / 5
+                    blade_position=septum_aperture_size, thickness=0.6e-3, kick=0.440e-3 / 5
                 ),
             )
             line.insert_element(septum_name + ".sep", zs, index=septum_name)
             septa_names_with_apertures.append(septum_name + ".sep")
-
-        zs = xt.BeamInteraction(
-            length=0.0,
-            interaction_process=SeptumInteraction(
-                blade_position=40e-3, thickness=5.2e-3, kick=0
-            ),
-        )
-        line.insert_element("tpst.21760_entry" + ".sep", zs, index="tpst.21760_entry")
-        septa_names_with_apertures.append("tpst.21760_entry" + ".sep")
+        
+    tpst = xt.BeamInteraction(
+                length=0.0,
+                interaction_process=SeptumInteraction(
+                    blade_position=0.04, thickness=0.01, kick=0
+                ))
+    line.insert_element("tpst.21760_entry" + ".sep", tpst, index="tpst.21760_entry")
+    septa_names_with_apertures.append("tpst.21760_entry" + ".sep")
 
 
     for mst in ["mst.21774", "mst.21779", "mst.21794"]:
@@ -106,7 +105,6 @@ def install_septa(line, install_zs=True, septum_aperture_size=68e-3):
         index="ap.do.mse21872",
     )
     return septa_names_with_apertures
-
 
 
 def draw_synoptic(ax, line, line_df):
