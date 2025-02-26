@@ -4,7 +4,10 @@ Indeed a tune scan with a smaller step has been done:
 the Q23inspection.ipynb is a tune scan for single turn close to a tune of 23. The step is reduced to 0.01. In this case the separation it has been calculated by the difference of CH particles and non-CH particles that have been tracked for half a turn.
 
 Consequently it is possible to check the separation of a chosen tune with
-the file SeparationInspection.ipynb. It can be used to directly check the separation of channeled and non-channeled particles at TPST location after a certain number of turns.
+the file TrackingSeparationTPST.ipynb. It can be used to directly check the separation of channeled and non-channeled particles at TPST location after a certain number of turns.
+
+The Apertures.ipynb file is a study of where the particles would hit the existing apertures with the Q23 optics.
+
 
 
 
