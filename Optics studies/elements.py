@@ -95,7 +95,7 @@ def install_septa(line, install_zs=True, septum_aperture_size=68e-3):#
         zs = xt.BeamInteraction(
             length=0.0,
             interaction_process=SeptumInteraction(
-                blade_position=mst_positions[i], thickness=4.2e-3, kick=1.69520713e-3 / 3
+                blade_position=mst_positions[i], thickness=4.2e-3, kick=1.69520713e-3 / 3 * 2  ## REMOVE THE *2 TO HAVE THE REAL KICK
             ),
         )
         line.insert_element(mst + ".sep", zs, index=mst)
@@ -404,19 +404,43 @@ def remove_ZS_apertures(line):
         
         # Stop modifying elements after "mse.21872"
         if inside_range:
-            if any(substring in element_name for substring in ["zs", "mse", "mst"]):
-                element = line[element_name]
+            element = line[element_name]
 
-                # Check if the element has adjustable apertures
-                if hasattr(element, 'min_x') and hasattr(element, 'max_x'):
-                    print(f"Opening aperture for element: {element_name}")
-                    element.min_x = -1.0  # Set minimum x aperture to -1
-                    element.max_x = 1.0   # Set maximum x aperture to 1
-                else:
-                    print(f"Element {element_name} does not have adjustable apertures.")
+            # Check if the element has adjustable apertures
+            if hasattr(element, 'min_x') and hasattr(element, 'max_x'):
+                print(f"Opening aperture for element: {element_name}")
+                element.min_x = -1.0  # Set minimum x aperture to -1
+                element.max_x = 1.0   # Set maximum x aperture to 1
+            else:
+                print(f"Element {element_name} does not have adjustable apertures.")
         
         # Exit once we pass "mse.21872"
-        if element_name == "ap.do.mse21872_aper":
+        if element_name == "qda.21910":
+            break  # Stop iterating beyond this point
+        
+        
+def remove_inner_sideLimits_closeTECA(line):
+    # Start modifying elements only when we reach "zs.21633"
+        # Extract the list of elements within the given range
+    inside_range = False  # Flag to track when we are in the range
+
+        # Iterate through all elements in the line
+    for element_name in line.element_names:
+    
+        if element_name == "qecd.31402_aper":
+            inside_range = True
+        
+        
+        if inside_range:
+            element = line[element_name]
+
+            # Check if the element has adjustable apertures
+            if isinstance(element, xt.LimitEllipse):
+                element.a = 1 # Increase semi-major axis
+            elif hasattr(element, 'min_x') and hasattr(element, 'max_x'):
+                element.min_x = -1  # Increase minimum x aperture
+        
+        if element_name == "ap.do.mse41891_aper":
             break  # Stop iterating beyond this point
 
 
@@ -429,12 +453,12 @@ def save_df_Limit_elements_features(line):
 
     # Iterate through all elements in the line
     for element_name, element in line.element_dict.items():
-        if hasattr(element, 'max_x') and hasattr(element, 'min_x'):
+        if element_name != "tt20.extraction" and hasattr(element, 'max_x') and hasattr(element, 'min_x'):
             element_names.append(element_name)
             max_x_values.append(element.max_x)
             min_x_values.append(element.min_x)
             positions.append(line.get_table()['s', element_name])
-        elif isinstance(element, xt.LimitEllipse):
+        elif element_name != "tt20.extraction" and isinstance(element, xt.LimitEllipse):
             element_names.append(element_name)
             max_x_values.append(element.a)
             min_x_values.append(-element.a)
@@ -461,16 +485,17 @@ def save_horizontal_positions_at_septa(recordNONCH, line, septa_names_with_apert
 
     # Iterate through each septum element and find its x position
     for sep in septa_names_with_apertures:
-        try:
-            # Find the index of the element in the recorded elements
-            idx = np.where(recorded_elements == line.element_names.index(sep))[0]
+        if sep != "tt20.extraction":
+            try:
+                # Find the index of the element in the recorded elements
+                idx = np.where(recorded_elements == line.element_names.index(sep))[0]
 
-            if len(idx) > 0:
-                x_positions[sep] = recorded_x[idx[0]]  # Extract first occurrence
-            else:
-                x_positions[sep] = np.nan  # If not found, return NaN
-        except ValueError:
-            x_positions[sep] = np.nan  # If element is missing, return NaN
+                if len(idx) > 0:
+                    x_positions[sep] = recorded_x[idx[0]]  # Extract first occurrence
+                else:
+                    x_positions[sep] = np.nan  # If not found, return NaN
+            except ValueError:
+                x_positions[sep] = np.nan  # If element is missing, return NaN
 
     # Convert to DataFrame for readability
     df_x_positions_at_Septum = pd.DataFrame(list(x_positions.items()), columns=["Element", "X Position"])
