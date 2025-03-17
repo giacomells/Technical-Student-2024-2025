@@ -62,40 +62,18 @@ def horizontal_bumpLSS2(line, x_target, px_target):
             limits=[-1e-3, 1e-3]  # Define kick limits to avoid excessive changes
         ),
         targets=[
+            xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
             xt.TargetSet(x=x_target, px=px_target, at='tpst.21760_entry'),  # Apply bump at target location
+            #xt.TargetSet(x=x_target, px=px_target, at='ap.up.mst21774'),  # Apply bump at target location
             xt.TargetSet(x=0, px=0, at=xt.END)  # Ensure bump is closed
         ]
     )
-
-    return opt
-
-def horizontal_bumpLSS2(line, x_target, px_target):
-    """
-    Adjusts the horizontal bump at tpst.21760_entry using four elements.
-    
-    Parameters:
-        line (xt.Line): The accelerator beamline.
-        x_target (float): Desired horizontal position at tpst.21760_entry.
-        px_target (float): Desired horizontal angle at tpst.21760_entry.
-    """
-    opt = line.match(
-        start='mpsh.21202', end='mplh.22195',  # Bump region
-        betx=1, bety=1, x=0, px=0,  # Keep initial conditions unchanged
-        vary=xt.VaryList(
-            ['kmpsh21202', 'kmplh21431', 'kmplh21995', 'kmplh22195'],  # Selected correctors
-            step=1e-10,
-            limits=[-1e-3, 1e-3]  # Define kick limits to avoid excessive changes
-        ),
-        targets=[
-            xt.TargetSet(x=x_target, px=px_target, at='tpst.21760_entry'),  # Apply bump at target location
-            xt.TargetSet(x=0, px=0, at=xt.END)  # Ensure bump is closed
-        ]
-    )
-
     return opt
 
 
-def horizontal_bumpLSS4(line, x_target, px_target):
+
+
+def horizontal_bumpLSS4(line):
     """
     Adjusts the horizontal bump at tpst.21760_entry using four elements.
     
@@ -108,14 +86,14 @@ def horizontal_bumpLSS4(line, x_target, px_target):
         start='mpsh.41402', end='mpsh.42198',  # Bump region
         betx=1, bety=1, x=0, px=0,  # Keep initial conditions unchanged
         vary=xt.VaryList(
-            ['kmpsh41402', 'kmplh41658', 'kmplh41994', 'kmplh42198'],  # Selected correctors
+            ['kmpsh41402', 'kmplh41658', 'kmplh41994', 'kmpsh42198'],  # Selected correctors
             step=1e-10,
             limits=[-1e-3, 1e-3]  # Define kick limits to avoid excessive changes
         ),
         targets=[
-            xt.TargetSet(x=TECA.jaw, px=TECA.tilt, at='TECA.entry'),  # Apply bump at target location
+            xt.TargetSet(x=0, px=0, at=xt.START), 
+            xt.TargetSet(x = TECA.jaw + TECA.width, px=TECA.tilt, at='TECA.entry'),  # Apply bump at target location
             xt.TargetSet(x=0, px=0, at=xt.END)  # Ensure bump is closed
         ]
     )
-
     return opt
