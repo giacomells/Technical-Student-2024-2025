@@ -267,8 +267,8 @@ TECA = xc.EverestCrystal(
     bending_angle = 174e-6 ,
     side="left",
     lattice="strip",
-    jaw = - 35e-3,  #original setting
-    tilt = - 1.67e-3,
+    jaw = - 34.5e-3,  #original setting
+    tilt = - 2.21e-3,
     width = 1.8e-3,
     height = 50e-3
     )
