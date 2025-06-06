@@ -6,14 +6,13 @@ import typing as t
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-from shapely.geometry import Polygon
 
 import xobjects as xo
 import xpart as xp
 import xtrack as xt
 import xcoll as xc
 
-from cpymad.madx import Madx
+#from cpymad.madx import Madx
 
 p = 400.0  # beam momentum (GeV/c)
 momentum = p  # beam momentum (GeV/c)
@@ -43,6 +42,73 @@ EX = N_EX / gamma
 EY = N_EY / gamma
 
 deltaP_P = 1.5e-3
+
+
+
+def initialise_line(change_aperture = True):
+    line = xt.Line.from_json("sps_for_sx.json")
+
+
+    # REFERENCE PARTICLE
+    line.particle_ref = xt.Particles(p0c=400e9, mass0=xt.PROTON_MASS_EV)
+
+    # INSERTING MARKERS
+    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
+    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
+    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
+    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
+
+    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
+
+    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
+
+    teca_entry_s = line.get_table()['s', 'TECA.entry']
+    
+    if change_aperture:
+        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
+
+        remove_ZS_apertures(line)
+        remove_inner_sideLimits_closeTECA(line)
+
+        save_df_Limit_elements_features(line)
+
+    return line
+
+
+
+
+def initialise_lineQ22(change_aperture = True):
+    line = xt.Line.from_json("lhc_q22.json")
+
+
+    # REFERENCE PARTICLE
+    line.particle_ref = xt.Particles(p0c=400.6e9, mass0=xt.PROTON_MASS_EV)
+
+    # INSERTING MARKERS
+    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
+    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
+    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
+    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
+
+    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
+
+    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
+
+    teca_entry_s = line.get_table()['s', 'TECA.entry']
+    
+    if change_aperture:
+        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
+
+        remove_ZS_apertures(line)
+        remove_inner_sideLimits_closeTECA(line)
+
+        save_df_Limit_elements_features(line)
+
+    return line
+
+
+
+
 
 class SeptumInteraction:
     def __init__(self, blade_position: float = 68e-3, thickness:float = 0.3e-3, kick:float = 1e-3) -> None:
@@ -117,7 +183,7 @@ def install_septa(line, install_zs=True, septum_aperture_size=68e-3):#
 
     line.insert_element(
         name="tt20.extraction",
-        element=xt.LimitRect(min_x=-1.0, max_x=70e-3, min_y=-1.0, max_y=1.0),
+        element=xt.LimitRect(min_x=-70, max_x=150e-3, min_y=-1.0, max_y=1.0),
         index="ap.do.mse21872",
     )
     return septa_names_with_apertures
@@ -248,28 +314,41 @@ def print_optics_features(line):
     print(f"Phase advance Teca - Tcsm: {phaseAdvanceTecaTcsm:.2f}")
     print(f"Phase advance Tpst - Tcsm: {phaseAdvanceTpstTcsm:.2f}")
 
-"""
+
+# TECA = xc.EverestCrystal(
+#     length=2e-3, 
+#     material=xc.materials.SiliconCrystal, 
+#     bending_angle = 174e-6 ,
+#     side="left",
+#     lattice="strip",
+#     jaw =  34e-3,  #original setting
+#     tilt =  0.85e-3,
+#     width = 1.8e-3,
+#     height = 50e-3
+#     )
+
+
+# TECA = xc.EverestCrystal(
+#     length=2e-3, 
+#     material=xc.materials.SiliconCrystal, 
+#     bending_angle = - 174e-6 ,              # THIS CRYSTAL IS CHANNELING TOWARDS THE INSIDE OF THE RING!!!
+#     side="left",
+#     lattice="strip",
+#     jaw = - 35e-3,  #original setting
+#     tilt = - 1.23e-3,
+#     width = 1.8e-3,
+#     height = 50e-3
+#     )
 TECA = xc.EverestCrystal(
     length=2e-3, 
     material=xc.materials.SiliconCrystal, 
-    bending_angle = 174e-6 ,
-    side="left",
+    bending_angle = - 174e-6 ,              # THIS CRYSTAL IS CHANNELING TOWARDS THE INSIDE OF THE RING!!!
+    side="-",
     lattice="strip",
-    jaw = - 51.4e-3,  #original setting
+    #jaw = - 35e-3,  #Setting for simulation
+    jaw = - 52e-3,  #original setting
     tilt = - 1.23e-3,
-    width = 1.8e-3,
-    height = 50e-3
-    )
- """
-TECA = xc.EverestCrystal(
-    length=2e-3, 
-    material=xc.materials.SiliconCrystal, 
-    bending_angle = 174e-6 ,
-    side="left",
-    lattice="strip",
-    jaw = - 34.5e-3,  #original setting
-    tilt = - 2.21e-3,
-    width = 1.8e-3,
+    width = 0.8e-3,
     height = 50e-3
     )
 
@@ -281,7 +360,7 @@ TECS = xc.EverestCrystal(
     lattice="strip",
     jaw = -0.0315,
     tilt = 10e-6,
-    width = 2e-3,
+    width = 0.8e-3,
     height = 50e-3
     )
 
@@ -515,4 +594,12 @@ def save_horizontal_positions_at_septa(recordNONCH, line, septa_names_with_apert
     # Display the results
     print(df_x_positions_at_Septum)
     
+    
+
+
+
+def install_MVRA(line, install_mvr=True):
+    """
+    Installs a Multi Volume Reflection Array of crystals (MVRA) in the beamline at TECA position.
+    """
     
