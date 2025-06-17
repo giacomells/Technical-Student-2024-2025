@@ -118,7 +118,7 @@ def horizontal_bumpLSS2atZS(line, x_target, px_target):
     )
     return opt
 
-def ensure_bump_closed(line):
+def ensure_closed_orbit(line):
     """
     Ensures that the bump is closed at the start and end of the line.
     
@@ -129,7 +129,9 @@ def ensure_bump_closed(line):
         start='begi.10010', end='end.10010',  # Bump region
         betx=1, bety=1, x=0, px=0,  # Keep initial conditions unchanged
         vary=xt.VaryList(
-            ['kmpsh21202', 'kmplh21431', 'kmpnh21732', 'kmplh21995', 'kmplh22195', 'kmpsh41402', 'kmplh41658', 'kmplh41994', 'kmpsh42198'],  # Selected correctors. added kmpnh21732 in date 04.04.2025 from Aleksandr example
+            #['kmpsh21202', 'kmplh21431', 'kmpnh21732', 'kmplh21995', 'kmplh22195', 'kmpsh41402', 'kmplh41658', 'kmplh41994', 'kmpsh42198'],  # Selected correctors. added kmpnh21732 in date 04.04.2025 from Aleksandr example
+            ['kmpsh41402', 'kmplh41658', 'kmplh41994', 'kmpsh42198'],  # Selected correctors. added kmpnh21732 in date 04.04.2025 from Aleksandr example
+            
             step=1e-10,
             limits=[-1e-3, 1e-3]  # Define kick limits to avoid excessive changes
         ),
@@ -169,6 +171,36 @@ def horizontal_bumpLSS4(line, x_target = (TECA.jaw - TECA.width), px_target = TE
         ]
     )
     return opt
+
+def horizontal_bumpLSS4NEW(line, x_target = (TECA.jaw - TECA.width), px_target = TECA.tilt + 0 * 10e-6):
+    """
+    Adjusts the horizontal bump at tpst.21760_entry using four elements.
+    
+    Parameters:
+        line (xt.Line): The accelerator beamline.
+        x_target (float): Desired horizontal position at tpst.21760_entry.
+        px_target (float): Desired horizontal angle at tpst.21760_entry.
+    """
+    opt = line.match(
+        start='mpsh.41402', end='mpsh.42198',  # Bump region
+        #start='begi.10010', end='end.10010',
+        betx=1, bety=1, x=0, px=0,  # Keep initial conditions unchanged
+        vary=xt.VaryList(
+            ['kmpsh41402', 'kmplh41658', 'kmplh41994', 'kmpsh42198'],  # Selected correctors
+            #['kmplh41658', 'kmplh41994', 'kmpsh42198'],  # Selected correctors with one corrector removed (kmpsh41402)
+            step=1e-10,
+            limits=[-1e-3, 1e-3]  # Define kick limits to avoid excessive changes
+        ),
+        targets=[
+            xt.TargetSet(x=0, px=0, at=xt.START), 
+            xt.TargetSet(x = x_target, px = px_target, at='TECA.entry'),  # Apply bump at target location
+            #xt.TargetSet(x=0, px=0, at= 'drift_779'),  # Ensure bump is closed
+            xt.TargetSet(x=0, px=0, at=xt.END)  # Ensure bump is closed
+        ]
+    )
+    return opt
+
+
 
 def horizontal_bumpLSS4_Francesco(line):
     """
@@ -244,3 +276,78 @@ def rematch_opticsQ22(line, tune = 22.13, change_aperture = True):
     
         
     return optTune, optChromaticity
+
+
+
+
+
+
+
+
+#### ORTHOGONAL KNOBS FOR THE BUMPS
+
+def set_x_knobLSS4(line):
+    """
+    Create a knob that moves the beam by +1 mm in x at TECA.entry.
+    """
+    opt = line.match(
+        #knob_name="x_teca_knob",
+        #run=True,  # Run the matching now
+        method="4d",
+        vary=[
+            xt.VaryList(
+                [
+                    "kmplh41658",
+                    "kmplh41994",
+                    "kmpsh41402",
+                    "kmpsh42198",
+                ],
+                step=1e-6,
+            )
+        ], 
+        targets=[
+            xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
+            xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
+            xt.Target("x", - 1e-3, at="TECA.entry"),
+            xt.Target(px=0, at="TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
+            xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
+            xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
+
+    
+        ],
+    )
+    return opt
+
+
+def set_px_knobLSS4(line):
+    """
+    Create a knob that changes beam angle by +1 µrad (1e-6 rad) at TECA.entry.
+    """
+    opt = line.match(
+        #knob_name="px_teca_knob",
+        #run=True,
+        method="4d",
+        vary=[
+            xt.VaryList(
+                [
+                    "kmplh41658",
+                    "kmplh41994",
+                    "kmpsh41402",
+                    "kmpsh42198",
+                ],
+                step=1e-9,
+            )
+        ],
+        targets=[
+            #xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
+            xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
+            xt.Target("px", - 1e-6, at="TECA.entry"),
+            xt.Target(x = 0, at = "TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
+            xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
+            #xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
+        ],
+    )
+    return opt
+
+
+
