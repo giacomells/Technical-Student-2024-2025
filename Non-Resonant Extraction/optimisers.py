@@ -308,7 +308,7 @@ def set_x_knobLSS4(line):
         targets=[
             xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
             xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
-            xt.Target("x", - 1e-3, at="TECA.entry"),
+            xt.Target("x",  1e-3, at="TECA.entry"),
             xt.Target(px=0, at="TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
             xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
             xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
@@ -339,12 +339,12 @@ def set_px_knobLSS4(line):
             )
         ],
         targets=[
-            #xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
+            xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
             xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
-            xt.Target("px", - 1e-6, at="TECA.entry"),
+            xt.Target("px",  1e-6, at="TECA.entry"),
             xt.Target(x = 0, at = "TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
             xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
-            #xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
+            xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
         ],
     )
     return opt
