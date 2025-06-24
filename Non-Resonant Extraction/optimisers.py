@@ -318,6 +318,39 @@ def set_x_knobLSS4(line):
     )
     return opt
 
+def normalized_x_knobLSS4(line):
+    """
+    Create a knob that moves the beam by +1 mm in x at TECA.entry.
+    """
+    opt = line.match(
+        #knob_name="x_teca_knob",
+        #run=True,  # Run the matching now
+        method="4d",
+        vary=[
+            xt.VaryList(
+                [
+                    "kmplh41658",
+                    "kmplh41994",
+                    "kmpsh41402",
+                    "kmpsh42198",
+                ],
+                step=1e-6,
+            )
+        ], 
+        targets=[
+            xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
+            xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
+            xt.Target("x",   TECA.jaw - TECA.width, at="TECA.entry"),
+            xt.Target(px=0, at="TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
+            xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
+            xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
+
+    
+        ],
+    )
+    return opt
+
+
 
 def set_px_knobLSS4(line):
     """
@@ -342,6 +375,39 @@ def set_px_knobLSS4(line):
             xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
             xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
             xt.Target("px",  1e-6, at="TECA.entry"),
+            xt.Target(x = 0, at = "TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
+            xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
+            xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
+        ],
+    )
+    return opt
+
+
+
+
+def normalized_px_knobLSS4(line):
+    """
+    Create a knob that changes beam angle by +1 µrad (1e-6 rad) at TECA.entry.
+    """
+    opt = line.match(
+        #knob_name="px_teca_knob",
+        #run=True,
+        method="4d",
+        vary=[
+            xt.VaryList(
+                [
+                    "kmplh41658",
+                    "kmplh41994",
+                    "kmpsh41402",
+                    "kmpsh42198",
+                ],
+                step=1e-9,
+            )
+        ],
+        targets=[
+            xt.TargetSet(x=0, px=0, at=xt.START),  # Ensure bump is closed
+            xt.TargetSet(["x", "px"], 0.0, at="qf.42210"),
+            xt.Target("px",  TECA.tilt, at="TECA.entry"),
             xt.Target(x = 0, at = "TECA.entry"),            #ENSURING THIS KNOB IS ORTHOGONAL TO THE px TECA KNOB
             xt.TargetSet(["x", "px"], 0.0, at="qd.41310"),
             xt.TargetSet(x=0, px=0, at=xt.END),  # Ensure bump is closed
