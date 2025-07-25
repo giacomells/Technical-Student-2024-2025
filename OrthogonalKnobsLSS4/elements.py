@@ -18,7 +18,7 @@ p = 400.0  # beam momentum (GeV/c)
 momentum = p  # beam momentum (GeV/c)
 Brho = p * 3.3356  # beam rigidity ???
 
-N_EX = 10e-6
+N_EX = 1e-6
 N_EY = 5e-6
 BANDWIDTH = 1e-4
 
@@ -38,75 +38,7 @@ beam_energy_GeV = 400
 # Compute gamma
 gamma = beam_energy_GeV / proton_mass_GeV
 
-EX = N_EX / gamma
-EY = N_EY / gamma
-
 deltaP_P = 1.5e-3
-
-
-
-def initialise_line(change_aperture = True):
-    line = xt.Line.from_json("sps_for_sx.json")
-
-
-    # REFERENCE PARTICLE
-    line.particle_ref = xt.Particles(p0c=400e9, mass0=xt.PROTON_MASS_EV)
-
-    # INSERTING MARKERS
-    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
-    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
-    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
-    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
-
-    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
-
-    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
-
-    teca_entry_s = line.get_table()['s', 'TECA.entry']
-    
-    if change_aperture:
-        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
-
-        remove_ZS_apertures(line)
-        remove_inner_sideLimits_closeTECA(line)
-
-        save_df_Limit_elements_features(line)
-
-    return line
-
-
-
-
-def initialise_lineQ22(change_aperture = True):
-    line = xt.Line.from_json("lhc_q22.json")
-
-
-    # REFERENCE PARTICLE
-    line.particle_ref = xt.Particles(p0c=400.6e9, mass0=xt.PROTON_MASS_EV)
-
-    # INSERTING MARKERS
-    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
-    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
-    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
-    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
-
-    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
-
-    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
-
-    teca_entry_s = line.get_table()['s', 'TECA.entry']
-    
-    if change_aperture:
-        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
-
-        remove_ZS_apertures(line)
-        remove_inner_sideLimits_closeTECA(line)
-
-        save_df_Limit_elements_features(line)
-
-    return line
-
-
 
 
 
@@ -327,7 +259,6 @@ def print_optics_features(line):
 #     height = 50e-3
 #     )
 
-
 TECA1_8 = xc.EverestCrystal(
     length=2e-3, 
     material=xc.materials.SiliconCrystal, 
@@ -346,8 +277,22 @@ TECA = xc.EverestCrystal(
     bending_angle = - 174e-6 ,              # THIS CRYSTAL IS CHANNELING TOWARDS THE INSIDE OF THE RING!!!
     side="-",
     lattice="strip",
-    #jaw = - 35e-3,  #Setting for simulation
-    jaw = - 52e-3,  #original setting
+    jaw = - 39e-3,  # CLOSEST POSITION REACHABLE TO THE CENTER OF THE BEAM PIPE
+    #jaw = - 52e-3,  #original setting
+    #tilt = - 1.23e-3,
+    tilt = - 0.88e-3,
+    width = 0.8e-3,
+    height = 50e-3
+    )
+
+TECA39MM = xc.EverestCrystal(
+    length=2e-3, 
+    material=xc.materials.SiliconCrystal, 
+    bending_angle = - 174e-6 ,              # THIS CRYSTAL IS CHANNELING TOWARDS THE INSIDE OF THE RING!!!
+    side="-",
+    lattice="strip",
+    jaw = - 39e-3,  # CLOSEST POSITION REACHABLE TO THE CENTER OF THE BEAM PIPE
+    #jaw = - 52e-3,  #original setting
     tilt = - 1.23e-3,
     width = 0.8e-3,
     height = 50e-3
@@ -365,6 +310,17 @@ TECS = xc.EverestCrystal(
     height = 50e-3
     )
 
+def install_TECA_holder_aperture(line):
+    holder_thicnkess = 15e-3
+    holder_aperture = 35e-3
+    holder = xt.BeamInteraction(
+                length=0.0,
+                interaction_process=SeptumInteraction(
+                    blade_position = TECA.jaw - TECA.width - holder_thicnkess - holder_aperture, thickness = holder_thicnkess, kick = 0
+                ),
+            )
+    line.insert_element("TECA.holder", holder, index="TECA.entry")
+        
 
 # Given values
 x_teca = TECA.jaw  
@@ -530,8 +486,11 @@ def remove_inner_sideLimits_closeTECA(line):
             # Check if the element has adjustable apertures
             if isinstance(element, xt.LimitEllipse):
                 element.a = 1 # Increase semi-major axis
+                print(f"Opening aperture for element: {element_name}")
             elif hasattr(element, 'min_x') and hasattr(element, 'max_x'):
                 element.min_x = -1  # Increase minimum x aperture
+                print(f"Opening aperture for element: {element_name}")
+                
         
         if element_name == "ap.do.mse41891_aper":
             break  # Stop iterating beyond this point
@@ -604,3 +563,210 @@ def install_MVRA(line, install_mvr=True):
     Installs a Multi Volume Reflection Array of crystals (MVRA) in the beamline at TECA position.
     """
     
+    
+    
+    
+    
+    
+
+
+def initialise_line(change_aperture = True):
+    line = xt.Line.from_json("sps_for_sx.json")
+
+
+    # REFERENCE PARTICLE
+    line.particle_ref = xt.Particles(p0c=400e9, mass0=xt.PROTON_MASS_EV)
+
+    # INSERTING MARKERS
+    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
+    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
+    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
+    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
+
+    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
+
+    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
+
+    teca_entry_s = line.get_table()['s', 'TECA.entry']
+    
+    if change_aperture:
+        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
+
+        remove_ZS_apertures(line)
+        remove_inner_sideLimits_closeTECA(line)
+
+        save_df_Limit_elements_features(line)
+
+    return line
+
+
+
+
+def initialise_lineQ22(change_aperture = True):
+    line = xt.Line.from_json("lhc_q22.json")
+
+
+    # REFERENCE PARTICLE
+    line.particle_ref = xt.Particles(p0c=400.6e9, mass0=xt.PROTON_MASS_EV)
+
+    # INSERTING MARKERS
+    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
+    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
+    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
+    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
+
+    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
+
+    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
+
+    teca_entry_s = line.get_table()['s', 'TECA.entry']
+    
+    if change_aperture:
+        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
+
+        remove_ZS_apertures(line)
+        remove_inner_sideLimits_closeTECA(line)
+
+        save_df_Limit_elements_features(line)
+
+    return line
+
+
+def initialise_lineQ22_at_injection(change_aperture = True):
+    line = xt.Line.from_json("lhc_q22.json")
+
+
+    # REFERENCE PARTICLE
+    line.particle_ref = xt.Particles(p0c=14e9, mass0=xt.PROTON_MASS_EV)
+
+    # INSERTING MARKERS
+    line.insert_element(name='zs21633.entry.p1mm', element=xt.Marker(), at_s=line.get_table()['s', 'ap.up.zs21633']+1e-3)
+    line.insert_element("tpst.21760_entry", xt.Marker(), at_s = 1712.2203)
+    line.insert_element("TECA.entry", xt.Marker(), at_s = 4020.8939)
+    line.insert_element("TECA.exit", xt.Marker(), at_s = 4020.8939 + TECS.length)
+
+    #line.insert_element("TECS.everest_crystal", TECS, at_s = line.get_table()['s', 'tecs.21602'] )
+
+    line.insert_element("tcsm.51932.", xt.Marker(), at_s = 5219.6766)
+
+    teca_entry_s = line.get_table()['s', 'TECA.entry']
+    
+    if change_aperture:
+        blocking_elements = open_blocking_apertures(line, TECA, deltaP_P)
+
+        remove_ZS_apertures(line)
+        remove_inner_sideLimits_closeTECA(line)
+
+        save_df_Limit_elements_features(line)
+
+    return line
+
+
+
+
+def insert_vacuum_valveTECA(line):
+    line.insert_element(
+        name="vacuum_valve.teca",
+        element=xt.LimitRect(min_x = -0.072, max_x = 0.1, min_y = -0.1, max_y = 0.1),
+        at_s=line.get_table()['s', 'TECA.entry'] + 1
+    )
+    
+    
+
+
+def draw_apertures(line, tw, ax2):
+    """
+    Draws the apertures on the given axis.
+
+    Parameters:
+    - line: The line object containing the element names and their positions.
+    - tw: The twiss object containing the positions of the apertures.
+    - ax2: The axis on which to draw the apertures.
+    """
+    for element_name in line.element_names:
+        element = line.element_dict[element_name]
+        # Try to get the s position from twiss table, fallback to line.get_table() if not found
+        try:
+            s = tw["s", element_name]
+        except Exception:
+            try:
+                s = line.get_table()['s', element_name]
+            except Exception:
+                s = None
+        if s is not None:
+            if hasattr(element, 'min_x') and hasattr(element, 'max_x'):
+                if isinstance(element, xt.LimitRect):
+                    # Draw two rectangles to leave the aperture in the middle
+                    min_x = element.min_x
+                    max_x = element.max_x
+                    # Lower rectangle
+                    ax2.add_patch(
+                        plt.Rectangle(
+                            (s, -0.1),      # x0, y0
+                            5,             # width
+                            min_x + 0.1,    # height
+                            color='black',
+                            alpha=0.3,
+                            zorder=0
+                        )
+                    )
+                    # Upper rectangle
+                    ax2.add_patch(
+                        plt.Rectangle(
+                            (s, max_x),     # x0, y0
+                            5,             # width
+                            0.1 - max_x,    # height
+                            color='black',
+                            alpha=0.3,
+                            zorder=0
+                        )
+                    )
+            elif hasattr(element, 'a'):
+                a = element.a
+                # Draw two rectangles using 'a' as the aperture value
+                ax2.add_patch(
+                    plt.Rectangle(
+                        (s, -0.1),      # x0, y0
+                        5,             # width
+                        0.1 - a,        # height (lower)
+                        color='blue',
+                        alpha=0.3,
+                        zorder=0
+                    )
+                )
+                ax2.add_patch(
+                    plt.Rectangle(
+                        (s, a),         # x0, y0
+                        5,             # width
+                        0.1 - a,        # height (upper)
+                        color='blue',
+                        alpha=0.3,
+                        zorder=0
+                    )
+                )
+
+
+
+def draw_TECA(line, ax):
+    ax.add_patch(
+        plt.Rectangle(
+            (line.get_table()['s', 'TECA.entry'], TECA.jaw - TECA.width),  # x0, y0
+            1,  # width in the plot
+            TECA.width,   # height
+            color='black',
+            alpha=1,
+            zorder=0,
+            label='TECA'
+        )
+    )
+
+    ax.add_patch(
+        plt.Rectangle(
+            (line.get_table()['s', 'TECA.entry'], -0.1),  # x0, y0
+            1,  # width in the plot
+            0.1 - 35e-3 + TECA.jaw - TECA.width,   # height
+            color='black',
+            alpha=1,
+            zorder=0
+        )
+    )
