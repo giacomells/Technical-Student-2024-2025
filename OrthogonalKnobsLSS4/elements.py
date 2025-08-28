@@ -247,29 +247,7 @@ def print_optics_features(line):
     print(f"Phase advance Tpst - Tcsm: {phaseAdvanceTpstTcsm:.2f}")
 
 
-# TECA = xc.EverestCrystal(
-#     length=2e-3, 
-#     material=xc.materials.SiliconCrystal, 
-#     bending_angle = 174e-6 ,
-#     side="left",
-#     lattice="strip",
-#     jaw =  34e-3,  #original setting
-#     tilt =  0.85e-3,
-#     width = 1.8e-3,
-#     height = 50e-3
-#     )
 
-TECA1_8 = xc.EverestCrystal(
-    length=2e-3, 
-    material=xc.materials.SiliconCrystal, 
-    bending_angle = - 174e-6 ,              # THIS CRYSTAL IS CHANNELING TOWARDS THE INSIDE OF THE RING!!!
-    side="left",
-    lattice="strip",
-    jaw = - 35e-3,  #original setting
-    tilt = - 1.23e-3,
-    width = 1.8e-3,
-    height = 50e-3
-    )
 
 TECA = xc.EverestCrystal(
     length=2e-3, 
@@ -285,18 +263,6 @@ TECA = xc.EverestCrystal(
     height = 50e-3
     )
 
-TECA39MM = xc.EverestCrystal(
-    length=2e-3, 
-    material=xc.materials.SiliconCrystal, 
-    bending_angle = - 174e-6 ,              # THIS CRYSTAL IS CHANNELING TOWARDS THE INSIDE OF THE RING!!!
-    side="-",
-    lattice="strip",
-    jaw = - 39e-3,  # CLOSEST POSITION REACHABLE TO THE CENTER OF THE BEAM PIPE
-    #jaw = - 52e-3,  #original setting
-    tilt = - 1.23e-3,
-    width = 0.8e-3,
-    height = 50e-3
-    )
 
 TECS = xc.EverestCrystal(
     length=2e-3, 
