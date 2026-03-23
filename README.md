@@ -1,21 +1,74 @@
-# Slow extraction with crystals
+# Slow Extraction with Crystals (SPS)
 
-The aim is to simulate the Slow  Extraction from the SPS towards the Noth Area. 
+This repository contains studies and simulation workflows for slow extraction from the SPS toward the North Area, including non-resonant extraction strategies with TECA crystals.
 
-In particular this study aims to implement a new scheme for slow extraction which is non-resonant. This technique uses TECA crystal to give a kick to the particles that will be extracted. The beam is slowly pushed towards the crystal via reference momentum change.
+The project combines notebooks for analysis/visualization and Python modules used in extraction studies.
 
-## Requirements to run the simulation
-To run these codes is mandatory to have installed Xsuite.
-You can install it in the following link:
+## Repository structure
 
-https://xsuite.readthedocs.io/en/latest/installation.html
+- `Non-Resonant Extraction/`: non-resonant extraction studies, elements and optimizers.
+- `Resonant Extraction example/`: resonant extraction constants and notebooks.
+- `Optics studies/`: optics optimization studies.
+- `OrthogonalKnobsLSS4/`: LSS4 orthogonal knob studies.
+- `Crystal Analysis/`: crystal-focused analysis notebooks.
+- `Animations/`: animation scripts and sequence helpers.
+- `MD studies/`: machine development related studies.
+- `tests/`: automated tests.
 
-It is highly reccomended to create an appropriate environment, 
-in my case I did it with the miniforge that you can find in the link:
+## Requirements
 
-https://xsuite.readthedocs.io/en/latest/installation.html#install-miniforge
+Python 3.10+ is recommended.
 
-or use the requirements.txt if you want to use the libraries I used on my MacBook with Intel processor~(some features do not work on Intel processor such as MultiThread options while on the new M-ish proccessors work). 
+Install dependencies:
 
+```bash
+pip install -r requirements.txt
+```
 
-The best example of how the EverestCrystal is used is in the directory Non-Resonant Extraction where there is the file RecordingInteraction.ipynb. In this file you can see how the internal logger is used to save the interactions of the particles with the crystal.
+`xsuite`/`xtrack`/`xcoll` are required by several studies and notebooks.
+
+## Quick start
+
+1. Clone the repository.
+2. Create and activate a virtual environment.
+3. Install dependencies with `pip install -r requirements.txt`.
+4. Run tests:
+
+```bash
+pytest
+```
+
+5. Open notebooks for study-specific workflows.
+
+## Reproducibility notes
+
+- Avoid hardcoded local absolute paths when running scripts/notebooks.
+- Keep simulation, analysis and plotting as separate steps.
+- Document machine/OS constraints if needed for specific workflows.
+- If random processes are involved, expose and store random seeds.
+
+## Where to start
+
+For a practical entry point, start from:
+
+- `Non-Resonant Extraction/RecordingInteraction2.0.ipynb`
+- `Resonant Extraction example/SPSExtractionWithCrystalSeptum.ipynb`
+
+## Testing
+
+Tests live in `tests/` and are executed with `pytest`.
+
+Current tests validate core configuration consistency from the resonant extraction setup module.
+
+## Exam submission checklist
+
+Before submission:
+
+- [ ] Clean clone works on a second machine.
+- [ ] `pip install -r requirements.txt` succeeds.
+- [ ] Main study notebook/script run path is documented.
+- [ ] `pytest` runs and passes.
+- [ ] No hardcoded local absolute paths are required.
+- [ ] Documentation is reachable from this README.
+- [ ] Commit messages are clear and atomic.
+- [ ] No secrets or credentials are committed.

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.vscode/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Data/log artifacts (keep raw project data tracked intentionally)
+*.log
+*.tmp
