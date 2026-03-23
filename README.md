@@ -17,24 +17,25 @@ The project combines notebooks for analysis/visualization and Python modules use
 
 ## Requirements
 
-To run these codes is mandatory to have installed Xsuite software for accelerators studies.
-You can install it in the following link~(RECOMENDED):
+Xsuite is the core dependency.  The recommended installation method is via the
+official Xsuite guide (includes Miniforge/conda setup):
 
-https://xsuite.readthedocs.io/en/latest/installation.html
+<https://xsuite.readthedocs.io/en/latest/installation.html>
 
-It is highly reccomended to create an appropriate environment, 
-in my case I did it with the miniforge that you can find in the link:
+Alternatively, install core dependencies directly:
 
-https://xsuite.readthedocs.io/en/latest/installation.html#install-miniforge
+```bash
+pip install -r requirements-core.txt
+```
 
-
-In alternative, you can install the dependencies:
+For a fully reproducible environment matching the original study setup, use the
+complete pinned freeze:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-`xsuite`/`xtrack`/`xcoll` are required by several studies and notebooks.
+`xsuite`/`xtrack`/`xcoll`/`xpart` are required by all study notebooks and modules.
 
 ## Quick start
 
@@ -63,11 +64,21 @@ For a practical entry point, start from:
 - `Non-Resonant Extraction/RecordingInteraction2.0.ipynb`
 - `Resonant Extraction example/SPSExtractionWithCrystalSeptum.ipynb`
 
+## Documentation
+
+Full documentation lives in `docs/`:
+
+- [Theory and background](docs/theory.md) — physics of slow extraction and crystal channeling
+- [API reference](docs/api.md) — functions and constants in `elements.py` / `optimisers.py`
+- [How-to guide](docs/howto.md) — step-by-step instructions for running each study
+
 ## Testing
 
 Tests live in `tests/` and are executed with `pytest`.
 
-Current tests validate core configuration consistency from the resonant extraction setup module.
+Current tests validate:
+- Resonant extraction septa constants (`test_septa_constants.py`)
+- Non-resonant extraction physics constants and septum interface (`test_elements.py`)
 
 ## Exam submission checklist
 

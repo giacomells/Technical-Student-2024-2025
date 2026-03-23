@@ -1,0 +1,16 @@
+# Core dependencies — install these to run studies and tests.
+# For a fully reproducible environment, use requirements.txt (pinned full freeze).
+#
+# Recommended installation via Xsuite: https://xsuite.readthedocs.io/en/latest/installation.html
+
+xsuite>=0.30.0
+xtrack>=0.83.0
+xcoll>=0.5.12
+xpart>=0.23.0
+xobjects>=0.5.0
+numpy>=1.26
+scipy>=1.12
+matplotlib>=3.8
+pandas>=2.1
+cpymad>=1.17
+pytest>=8
