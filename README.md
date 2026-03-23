@@ -17,9 +17,18 @@ The project combines notebooks for analysis/visualization and Python modules use
 
 ## Requirements
 
-Python 3.10+ is recommended.
+To run these codes is mandatory to have installed Xsuite software for accelerators studies.
+You can install it in the following link~(RECOMENDED):
 
-Install dependencies:
+https://xsuite.readthedocs.io/en/latest/installation.html
+
+It is highly reccomended to create an appropriate environment, 
+in my case I did it with the miniforge that you can find in the link:
+
+https://xsuite.readthedocs.io/en/latest/installation.html#install-miniforge
+
+
+In alternative, you can install the dependencies:
 
 ```bash
 pip install -r requirements.txt
