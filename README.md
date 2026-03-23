@@ -61,8 +61,8 @@ pytest
 
 For a practical entry point, start from:
 
-- `Non-Resonant Extraction/RecordingInteraction2.0.ipynb`
-- `Resonant Extraction example/SPSExtractionWithCrystalSeptum.ipynb`
+- `Animations` folder to get along with XSuite and accelerator physics. Save the sequence and then run the phase space animation.
+- `Resonant Extraction example` to get more deep knowledge and example about resonant extraction from the SPS.
 
 ## Documentation
 
