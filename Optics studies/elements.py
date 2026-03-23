@@ -98,7 +98,7 @@ def install_septa(line, install_zs=True, septum_aperture_size=68e-3):#
         )
         line.insert_element(mst + ".sep", zs, index=mst)
         septa_names_with_apertures.append(mst + ".sep")
-        i =+ 1
+        i += 1
     
     i = 0
     for mse in ["mse.21832", "mse.21837", "mse.21852", "mse.21857", "mse.21872"]:
@@ -111,7 +111,7 @@ def install_septa(line, install_zs=True, septum_aperture_size=68e-3):#
         )
         line.insert_element(mse + ".sep", zs, index=mse)
         septa_names_with_apertures.append(mse + ".sep")
-        i =+ 1
+        i += 1
 
     line.insert_element(
         name="tt20.extraction",

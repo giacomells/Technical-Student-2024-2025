@@ -1,5 +1,6 @@
 # Import necessary modules
 import typing as t  # Module for type hinting
+from pathlib import Path
 import matplotlib.pyplot as plt  # For plotting data
 import numpy as np  # For numerical operations
 import xobjects as xo  # For handling objects related to particle tracking
@@ -16,7 +17,8 @@ DPP = 1e-4  # Momentum spread
 septum_aperture_size = 68e-3  # Size of the septum aperture in meters
 
 # Load the simulation line from a JSON file
-line = xt.Line.from_json("/sps_for_sx.json") #Replace with the pattern of the .json file if not in the same directory
+LINE_JSON_PATH = Path(__file__).resolve().parent / "sps_for_sx.json"
+line = xt.Line.from_json(str(LINE_JSON_PATH))
 
 # Define slicing strategies for thick elements, if needed
 Strategy = xt.slicing.Strategy
