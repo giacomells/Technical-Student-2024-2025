@@ -1,6 +1,6 @@
 # Slow Extraction with Crystals (SPS)
 
-This repository contains studies and simulation workflows for slow extraction from the SPS toward the North Area, including non-resonant extraction strategies with TECA crystals.
+This repository contains studies and simulation workflows for slow extraction from the SPS toward the North Area, including new [Non Resonant Slow Extraction Techniques with Crystals.](docs/TechnicalReport2025SlowExtractionWithCrystal.pdf).
 
 The project combines notebooks for analysis/visualization and Python modules used in extraction studies.
 
@@ -71,6 +71,7 @@ Full documentation lives in `docs/`:
 - [Theory and background](docs/theory.md) — physics of slow extraction and crystal channeling
 - [API reference](docs/api.md) — functions and constants in `elements.py` / `optimisers.py`
 - [How-to guide](docs/howto.md) — step-by-step instructions for running each study
+- [Technical Report 2025 — Slow Extraction with Crystals](docs/TechnicalReport2025SlowExtractionWithCrystal.pdf)
 
 ## Testing
 
