@@ -78,5 +78,10 @@ Current tests validate:
 - Resonant extraction septa constants (`test_septa_constants.py`)
 - Non-resonant extraction physics constants and septum interface (`test_elements.py`)
 
+  ### Usage notes
+#### Notebook code expects local imports such as `from elements import *` and `from optimisers import *`. In each directory the '.py' files have specific values inside of that could change the result of a simulation displayed in the notebook.
+If the shared `.py` or `.json` files are moved or renamed, the notebooks could fail.
+
+
 
 
