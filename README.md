@@ -29,6 +29,7 @@ Full documentation lives in `docs/`:
 
 ## Requirements
 
+
 Xsuite is the core dependency.  The recommended installation method is via the
 official Xsuite guide (includes Miniforge/conda setup):
 
@@ -50,6 +51,20 @@ pip install -r requirements.txt
 `xsuite`/`xtrack`/`xcoll`/`xpart` are required by all study notebooks and modules.
 
 Building a separated environment is strongly reccomended in order to avoid conflicts amongst dependencies. 
+
+### Use of Jupyter notebooks
+
+Jupyter notebooks are used throughout this project for analysis and visualization. If Jupyter is not already installed in your system, install it using:
+
+```bash
+pip install jupyter
+```
+
+Once installed, notebooks can be launched with:
+
+```bash
+jupyter notebook
+```
 
 ## Quick start
 
