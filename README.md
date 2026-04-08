@@ -86,7 +86,7 @@ For a practical entry point, start from:
 
 - `Animations` folder to get along with XSuite and accelerator physics. Save the sequence and then run the phase space animation.
 
-- To better understand how the accelerator is represented by the .json files, pull the gitlab repository of the SPS from the following link: <https://gitlab.cern.ch/acc-models/acc-models-sps.git>. Once the folder is downloaded, use the file 'BuildSequenceTemplate.py' to build a sequence with specific strengths. WARNING: if you did not create an environment with the requirements, the script won't work.
+- To better understand how the accelerator is represented by the .json files, pull the gitlab repository of the SPS from the following link: <https://gitlab.cern.ch/acc-models/acc-models-sps.git>. Once the folder is downloaded, use the file 'BuildSequenceTemplate.py' to build a sequence with specific strengths. WARNING: if you did not create a specific environment with the requirements, the script won't work.
 
 - `Resonant Extraction example` to get more deep knowledge and example about resonant extraction from the SPS.
 
