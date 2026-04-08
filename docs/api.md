@@ -119,6 +119,4 @@ animation of tracked particles.
 ## Notes on code duplication
 
 `elements.py` and `optimisers.py` are intentionally copied with minor
-study-specific modifications into each subdirectory.  A future refactor could
-extract a shared package; the current approach keeps each study self-contained
-and runnable without a package install step.
+study-specific modifications into each subdirectory.  
