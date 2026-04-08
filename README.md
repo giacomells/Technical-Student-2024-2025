@@ -69,8 +69,8 @@ jupyter notebook
 ## Quick start
 
 1. Clone the repository.
-2. Create and activate a virtual environment.
-3. Install dependencies~(preferably from <https://xsuite.readthedocs.io/en/latest/installation.html>).
+2. Create and activate a virtual environment(preferably from <https://xsuite.readthedocs.io/en/latest/installation.html>).
+3. Install dependencies.
 4. Run tests:
 
 ```bash
