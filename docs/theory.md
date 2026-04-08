@@ -51,5 +51,5 @@ $Q_y \approx 26.18$, labelled `lhc_q22`) and, for comparison, at the Q22 optics
 ## References
 
 - Xsuite documentation: <https://xsuite.readthedocs.io>
-- xcoll documentation: <https://xcoll.readthedocs.io>
-- SPS slow extraction review: CERN-ACC-2018-0009
+- Proton extraction from the CERN SPS using bent silicon crystals: <https://www.sciencedirect.com/science/article/abs/pii/0168583X9600239X>
+- Septum shadowing by means of a bent crystal to reduce slow extraction beam loss: <https://journals.aps.org/prab/abstract/10.1103/PhysRevAccelBeams.22.093502>
