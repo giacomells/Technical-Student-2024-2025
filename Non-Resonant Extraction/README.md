@@ -23,9 +23,3 @@ These files are reused across notebooks and helper modules and should remain in 
 - Line initialization helpers in `elements.py` load local JSON sequences from this same directory.
 - If the shared `.py` or `.json` files are moved or renamed, the notebooks will fail.
 
-## Recommended workflow
-
-1. Open this directory as the notebook working directory.
-2. Import helpers from `elements.py` and `optimisers.py`.
-3. Load the appropriate sequence (`sps_for_sx.json` or `lhc_q22.json`) through the helper functions.
-4. Keep simulation, analysis, and plotting steps logically separated in the notebook.
