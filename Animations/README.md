@@ -4,8 +4,9 @@ This directory contains scripts for generating SPS extraction animations and for
 
 ### Files
 
-- `phaseSpaceAnimation.py`: generates a phase-space animation from a local SPS JSON sequence.
 - `save_sequence_SPS.py`: builds and saves `sps_for_sx.json`.
+- `phaseSpaceAnimation.py`: generates a phase-space animation from a local SPS JSON sequence.
+
 
 ### Usage notes
 
