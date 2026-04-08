@@ -62,12 +62,6 @@ pytest
 
 5. Open notebooks for study-specific workflows.
 
-## Reproducibility notes
-
-- Avoid hardcoded local absolute paths when running scripts/notebooks.
-- Keep simulation, analysis and plotting as separate steps.
-- Document machine/OS constraints if needed for specific workflows.
-- If random processes are involved, expose and store random seeds.
 
 ## Where to start
 
@@ -84,15 +78,5 @@ Current tests validate:
 - Resonant extraction septa constants (`test_septa_constants.py`)
 - Non-resonant extraction physics constants and septum interface (`test_elements.py`)
 
-## Exam submission checklist
 
-Before submission:
 
-- [ ] Clean clone works on a second machine.
-- [ ] `pip install -r requirements.txt` succeeds.
-- [ ] Main study notebook/script run path is documented.
-- [ ] `pytest` runs and passes.
-- [ ] No hardcoded local absolute paths are required.
-- [ ] Documentation is reachable from this README.
-- [ ] Commit messages are clear and atomic.
-- [ ] No secrets or credentials are committed.
