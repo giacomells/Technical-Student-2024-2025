@@ -227,6 +227,8 @@ def set_x_knobLSS4(line):
     Create a knob that moves the beam by +1 mm in x at TECA.entry.
     """
     opt = line.match(
+        start='begi.10010', end='end.10010',
+        betx=1, bety=1, x=0, px=0,
         #knob_name="x_teca_knob",
         #run=True,  # Run the matching now
         method="4d",
@@ -323,6 +325,8 @@ def set_px_knobLSS4(line):
     Create a knob that changes beam angle by +1 µrad (1e-6 rad) at TECA.entry.
     """
     opt = line.match(
+        start='begi.10010', end='end.10010',
+        betx=1, bety=1, x=0, px=0,
         #knob_name="px_teca_knob",
         #run=True,
         method="4d",
@@ -353,6 +357,8 @@ def set_px_knobLSS4(line):
     Create a knob that changes beam angle by +1 µrad (1e-6 rad) at TECA.entry.
     """
     opt = line.match(
+        start='begi.10010', end='end.10010',
+        betx=1, bety=1, x=0, px=0,
         #knob_name="px_teca_knob",
         #run=True,
         method="4d",
