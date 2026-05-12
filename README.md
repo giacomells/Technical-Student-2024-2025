@@ -97,6 +97,19 @@ Tests live in `tests/` and are executed with `pytest`.
 Current tests validate:
 - Resonant extraction septa constants (`test_septa_constants.py`)
 - Non-resonant extraction physics constants and septum interface (`test_elements.py`)
+- SPS sequence creation from CERN GitLab and RF/Twiss setup (`test_sps_sequence_creation.py`)
+- Optics knob matching in Q22 optics (`test_optics_knobs.py`)
+
+Pytest is configured through `pytest.ini`, so a plain `pytest` command runs the suite with verbose colored output.
+
+You can also run a single test file directly, for example:
+
+```bash
+python tests/test_elements.py
+python tests/test_septa_constants.py
+python tests/test_sps_sequence_creation.py
+python tests/test_optics_knobs.py
+```
 
   ### Usage notes
 #### Notebook code expects local imports such as `from elements import *` and `from optimisers import *`. In each directory the '.py' files have specific values inside of that could change the result of a simulation displayed in the notebook.
