@@ -8,6 +8,8 @@ import importlib.util
 import math
 from pathlib import Path
 
+import pytest
+
 
 def load_elements_module():
     repo_root = Path(__file__).resolve().parents[1]
@@ -95,3 +97,7 @@ def test_septum_thickness_less_than_blade_position():
     el = load_elements_module()
     s = el.SeptumInteraction()
     assert s.thickness < s.blade_position
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "--color=yes", "-v"]))

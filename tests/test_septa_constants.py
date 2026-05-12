@@ -1,6 +1,8 @@
 import importlib.util
 from pathlib import Path
 
+import pytest
+
 
 def load_septa_module():
     repo_root = Path(__file__).resolve().parents[1]
@@ -39,3 +41,7 @@ def test_critical_parameters_are_positive_and_ordered():
 
     assert all(start < end for start, end in zip(septa.ZSentrances, septa.ZSexits))
     assert all(start < end for start, end in zip(septa.MSTentrances, septa.MSTexits))
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "--color=yes", "-v"]))
