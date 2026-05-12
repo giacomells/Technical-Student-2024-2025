@@ -2,13 +2,6 @@ import os
 
 import pytest
 
-# When this file is executed directly, enable the integration checks automatically.
-# Plain pytest collection still keeps them opt-in unless the variable is exported.
-if __name__ == "__main__":
-    os.environ.setdefault("RUN_CERN_GITLAB_TESTS", "1")
-
-RUN_CERN_GITLAB_TESTS = os.environ.get("RUN_CERN_GITLAB_TESTS") == "1"
-
 requests = pytest.importorskip("requests")
 xp = pytest.importorskip("xpart")
 xt = pytest.importorskip("xtrack")
@@ -100,10 +93,6 @@ def _build_sps_line_from_gitlab():
     return line
 
 
-@pytest.mark.skipif(
-    not RUN_CERN_GITLAB_TESTS,
-    reason="Set RUN_CERN_GITLAB_TESTS=1 to run CERN GitLab sequence creation checks.",
-)
 def test_can_build_sps_sequence_from_cern_gitlab():
     # Smoke test: the sequence should load, convert, and expose the expected SPS
     # line length and reference elements.
@@ -115,10 +104,6 @@ def test_can_build_sps_sequence_from_cern_gitlab():
     assert "ap.up.zs21633" in line.element_names
 
 
-@pytest.mark.skipif(
-    not RUN_CERN_GITLAB_TESTS,
-    reason="Set RUN_CERN_GITLAB_TESTS=1 to run CERN GitLab sequence creation checks.",
-)
 def test_rf_setup_supports_6d_twiss_after_sequence_creation():
     # Recreate the RF configuration from the example and verify that enabling the
     # cavity produces a valid 6D Twiss solution.
