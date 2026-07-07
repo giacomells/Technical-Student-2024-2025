@@ -6,7 +6,12 @@ The project combines notebooks for analysis/visualization and Python modules use
 
 
 ## Requirements
+Xsuite is the core dependency.  The recommended installation method is via the
+official Xsuite guide (includes Miniforge/conda setup):
 
+<https://xsuite.readthedocs.io/en/latest/installation.html>
+
+Building a separated environment is strongly reccomended in order to avoid conflicts amongst dependencies. 
 ### Automated setup (recommended)
 
 Run the provided installer once. It detects your OS and CPU architecture,
