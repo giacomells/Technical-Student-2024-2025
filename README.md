@@ -38,7 +38,7 @@ selection is needed:
 | **Terminal** (one-time per session) | `conda activate xsuite_env`, then `python script.py` as usual |
 | **Terminal** (no activation) | `./run.sh Animations/save_sequence_SPS.py` or `./run.sh -m pytest` |
 
-### Manual setup
+#### Manual setup
 
 If you already have a Python environment, install the core dependencies
 directly (range-pinned specifiers):
