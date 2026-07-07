@@ -103,7 +103,3 @@ pytest                    # run all tests (fast unit + skippable integration)
 pytest -m slow            # also run network / heavy integration tests
 ```
 
-Current tests validate:
-- Animation script module structure and constants (`test_sps_sequence_creation.py`)
-
-
