@@ -85,14 +85,9 @@ pytest                         # after conda activate xsuite_env
 ./run.sh Animations/phaseSpaceAnimation.py
 ```
 
-### Optional: build the Q22 optics line
+### Optional: Notebooks
+To understand better the studies made on the accelerator and on the crystal itself.
 
-The optics integration tests require `lhc_q22.json`, generated from local
-MAD-X model files placed in `Animations/acc-models-sps/`:
-
-```bash
-cd Animations && python BuildSequenceTemplate.py
-```
 
 ## Testing
 
