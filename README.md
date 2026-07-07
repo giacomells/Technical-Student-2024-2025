@@ -7,20 +7,43 @@ The project combines notebooks for analysis/visualization and Python modules use
 
 ## Requirements
 
+### Automated setup (recommended)
 
-Xsuite is the core dependency.  The recommended installation method is via the
-official Xsuite guide (includes Miniforge/conda setup):
+Run the provided installer once. It detects your OS and CPU architecture,
+downloads Miniforge if needed, creates a dedicated conda environment
+(`xsuite_env`), and installs all dependencies:
 
-<https://xsuite.readthedocs.io/en/latest/installation.html>
+```bash
+chmod +x install.sh
+./install.sh
+```
 
-Alternatively, install core dependencies with range-pinned specifiers:
+Supported platforms: **macOS** (Intel & Apple Silicon) and **Linux**
+(x86_64 & aarch64). On **Windows**, install
+[WSL](https://learn.microsoft.com/en-us/windows/wsl/install) first and run
+the script from the WSL terminal — the script prints step-by-step
+instructions if it detects a Windows shell.
+
+After installation, scripts can be run in three ways — no manual environment
+selection is needed:
+
+| Scenario | How |
+|---|---|
+| **VS Code** | `install.sh` writes `.vscode/settings.json` with the interpreter path — just press ▶ Run |
+| **Terminal** (one-time per session) | `conda activate xsuite_env`, then `python script.py` as usual |
+| **Terminal** (no activation) | `./run.sh Animations/save_sequence_SPS.py` or `./run.sh -m pytest` |
+
+### Manual setup
+
+If you already have a Python environment, install the core dependencies
+directly (range-pinned specifiers):
 
 ```bash
 pip install -r requirements-core.txt
 ```
 
-For a fully reproducible environment matching the original study setup (macOS,
-Intel), use the complete pinned freeze:
+For a fully reproducible environment matching the original study setup
+(macOS, Intel), use the complete pinned freeze:
 
 ```bash
 pip install -r requirements.txt
@@ -41,24 +64,25 @@ The full study is reported in this article:
 ## Quick start
 
 1. Clone the repository.
-2. Create and activate a virtual environment (Xsuite guide recommended).
-3. Install dependencies.
-4. Run the test suite:
+2. Run `./install.sh` (see Requirements above).
+3. Run the test suite:
 
 ```bash
-pytest
+pytest                         # after conda activate xsuite_env
+# or, without activating:
+./run.sh -m pytest
 ```
 
-5. Generate the SPS extraction line (needed for the animation):
+4. Generate the SPS extraction line (needed for the animation):
 
 ```bash
-cd Animations && python save_sequence_SPS.py
+./run.sh Animations/save_sequence_SPS.py
 ```
 
-6. Run the phase-space animation:
+5. Run the phase-space animation:
 
 ```bash
-cd Animations && python phaseSpaceAnimation.py
+./run.sh Animations/phaseSpaceAnimation.py
 ```
 
 ### Optional: build the Q22 optics line
