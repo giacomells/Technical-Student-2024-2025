@@ -4,35 +4,6 @@ This repository contains studies and simulation workflows for slow extraction fr
 
 The project combines notebooks for analysis/visualization and Python modules used in extraction studies.
 
-## Documentation
-
-Full documentation lives in `docs/`:
-
-- [Theory and background](docs/theory.md) — physics of slow extraction and crystal channeling
-- [API reference](docs/api.md) — functions and constants in `elements.py` / `optimisers.py`
-- [How-to guide](docs/howto.md) — step-by-step instructions for running each study
-
-The full study is reported in this article:
-[Technical Report 2025 — Slow Extraction with Crystals](docs/TechnicalReport2025SlowExtractionWithCrystal.pdf)
-
-
-## Repository structure
-
-```
-Animations/              # Runnable scripts for the phase-space animation workflow
-    save_sequence_SPS.py    # Download SPS model from CERN GitLab → sps_for_sx.json
-    phaseSpaceAnimation.py  # Load JSON and run turn-by-turn animation
-    BuildSequenceTemplate.py  # Build LHC Q22 line from local MAD-X files → lhc_q22.json
-    sps_for_sx.json         # Pre-built SPS Q26 extraction line (committed)
-
-docs/                    # Project documentation
-    theory.md
-    api.md
-    howto.md
-
-tests/                   # Automated test suite (pytest)
-    test_sps_sequence_creation.py  # Animation script unit + integration tests
-```
 
 ## Requirements
 
@@ -54,6 +25,18 @@ Intel), use the complete pinned freeze:
 ```bash
 pip install -r requirements.txt
 ```
+
+## Documentation
+
+Full documentation lives in `docs/`:
+
+- [Theory and background](docs/theory.md) — physics of slow extraction and crystal channeling
+- [API reference](docs/api.md) — functions and constants in `elements.py` / `optimisers.py`
+- [How-to guide](docs/howto.md) — step-by-step instructions for running each study
+
+The full study is reported in this article:
+[Technical Report 2025 — Slow Extraction with Crystals](docs/TechnicalReport2025SlowExtractionWithCrystal.pdf)
+
 
 ## Quick start
 
