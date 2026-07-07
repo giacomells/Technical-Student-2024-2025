@@ -470,6 +470,35 @@ class TestXsuiteLineCreationModule:
         sig = inspect.signature(line_mod.create_xsuite_line)
         assert "urls" in sig.parameters
 
+    def test_create_xsuite_line_raises_for_http_errors(self, monkeypatch):
+        """HTTP failures from model downloads must surface immediately."""
+        import requests
+
+        class FakeResponse:
+            text = "ignored"
+
+            def raise_for_status(self):
+                raise requests.HTTPError("download failed")
+
+        class FakeMadx:
+            def __init__(self, stdout=None):
+                self.sequence = {"sps": object()}
+
+            def beam(self):
+                return None
+
+            def input(self, text):
+                raise AssertionError("MAD-X input should not run after an HTTP failure")
+
+            def use(self, sequence):
+                return None
+
+        monkeypatch.setattr(line_mod, "Madx", FakeMadx)
+        monkeypatch.setattr(line_mod.requests, "get", lambda url: FakeResponse())
+
+        with pytest.raises(requests.HTTPError, match="download failed"):
+            line_mod.create_xsuite_line(urls=["https://example.invalid/model.madx"])
+
     @pytest.mark.slow
     def test_create_xsuite_line_builds_sps_from_cern_gitlab(self):
         """Integration: download Q20 model and verify the resulting line."""

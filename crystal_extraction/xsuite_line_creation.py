@@ -38,7 +38,9 @@ def create_xsuite_line(sequence: str = 'sps', file_path: t.Optional[str] = None,
     mad_.beam()
 
     for url_ in urls:
-        mad_.input(requests.get(url_).text)
+        response = requests.get(url_)
+        response.raise_for_status()
+        mad_.input(response.text)
 
     if mad_inputs is not None:
         for input_ in mad_inputs:
