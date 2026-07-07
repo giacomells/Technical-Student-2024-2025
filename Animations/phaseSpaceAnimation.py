@@ -259,6 +259,11 @@ if __name__ == "__main__":
 
     plt.close("all")
     ani = build_animation(positions_x, momenta_px, num_turns)
+
+    _gif_path = Path(__file__).resolve().parent / "phase_space_animation.gif"
+    ani.save(str(_gif_path), writer="pillow", fps=10)
+    print(f"Animation saved to {_gif_path}")
+
     plt.show()
 
 

@@ -90,6 +90,11 @@ pytest                         # A. after conda activate xsuite_env
 ./run.sh Animations/phaseSpaceAnimation.py
 ```
 
+The animation shows the horizontal phase space of the extracted beam turn by turn,
+with particles drifting toward the ZS septum wire (red dashed line) and being lost on contact:
+
+![Phase-space slow extraction animation](Animations/phase_space_animation.gif)
+
 ### Optional: Notebooks
 To understand better the studies made on the accelerator and on the crystal itself. The python files used for these studies are in [Crystal Extraction folder](crystal_extraction)
 
