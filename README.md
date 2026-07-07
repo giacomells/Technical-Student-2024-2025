@@ -34,7 +34,7 @@ selection is needed:
 
 | Scenario | How |
 |---|---|
-| **VS Code** | `install.sh` writes `.vscode/settings.json` with the interpreter path — just press ▶ Run |
+| **VS Code** | `install.sh` writes `.vscode/settings.json` just press ▶ Run |
 | **Terminal** (one-time per session) | `conda activate xsuite_env`, then `python script.py` as usual |
 | **Terminal** (no activation) | `./run.sh Animations/save_sequence_SPS.py` or `./run.sh -m pytest` |
 
