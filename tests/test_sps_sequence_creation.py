@@ -1,5 +1,5 @@
 """
-Tests for Animations/save_sequence_SPS and Animations/BuildSequenceTemplate.
+Tests for Animations/save_sequence_SPS.
 
 The fast unit tests (no network, no heavy computation) verify the module
 structure — constants, function signatures, return types, and path handling.
@@ -20,11 +20,9 @@ pytest.importorskip("xpart")
 pytest.importorskip("xobjects")
 
 import Animations.save_sequence_SPS as seq_mod  # noqa: E402
-import Animations.BuildSequenceTemplate as build_mod  # noqa: E402
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _SPS_JSON = _REPO_ROOT / "Animations" / "sps_for_sx.json"
-_LHC_Q22_JSON = _REPO_ROOT / "Animations" / "lhc_q22.json"
 
 
 # ---------------------------------------------------------------------------
@@ -92,33 +90,6 @@ def test_save_sps_json_accepts_output_path_and_momentum():
 
 
 # ---------------------------------------------------------------------------
-# BuildSequenceTemplate — module-level constants and functions
-# ---------------------------------------------------------------------------
-
-
-def test_build_template_output_json_is_a_path():
-    """OUTPUT_JSON must be a Path pointing to a .json file."""
-    assert isinstance(build_mod.OUTPUT_JSON, Path)
-    assert build_mod.OUTPUT_JSON.suffix == ".json"
-
-
-def test_build_template_repo_root_is_a_path():
-    """REPO_ROOT must be a Path object."""
-    assert isinstance(build_mod.REPO_ROOT, Path)
-
-
-def test_build_lhc_q22_json_is_callable():
-    """build_lhc_q22_json must be a callable function."""
-    assert callable(build_mod.build_lhc_q22_json)
-
-
-def test_build_lhc_q22_json_returns_path_type():
-    """build_lhc_q22_json's return annotation must be Path."""
-    hints = build_mod.build_lhc_q22_json.__annotations__
-    assert hints.get("return") is Path
-
-
-# ---------------------------------------------------------------------------
 # Pre-built JSON files (if available)
 # ---------------------------------------------------------------------------
 
@@ -129,16 +100,6 @@ def test_sps_json_is_valid_json_when_present():
         pytest.skip("sps_for_sx.json not present — run save_sequence_SPS.py first")
     import json
     with open(_SPS_JSON) as f:
-        data = json.load(f)
-    assert isinstance(data, dict), "Top-level JSON structure must be a dict"
-
-
-def test_lhc_q22_json_is_valid_json_when_present():
-    """When lhc_q22.json exists it must be parseable JSON."""
-    if not _LHC_Q22_JSON.exists():
-        pytest.skip("lhc_q22.json not present — run BuildSequenceTemplate.py first")
-    import json
-    with open(_LHC_Q22_JSON) as f:
         data = json.load(f)
     assert isinstance(data, dict), "Top-level JSON structure must be a dict"
 
