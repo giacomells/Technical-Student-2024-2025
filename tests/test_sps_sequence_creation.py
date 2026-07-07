@@ -1,102 +1,168 @@
-import os
+"""
+Tests for Animations/save_sequence_SPS and Animations/BuildSequenceTemplate.
+
+The fast unit tests (no network, no heavy computation) verify the module
+structure — constants, function signatures, return types, and path handling.
+
+Integration tests that actually download the SPS model from CERN GitLab or
+read large JSON files are marked ``@pytest.mark.slow`` and are skipped by
+default.  Run them explicitly with ``pytest -m slow``.
+"""
+
+import inspect
+from pathlib import Path
 
 import pytest
 
 requests = pytest.importorskip("requests")
-xp = pytest.importorskip("xpart")
-xt = pytest.importorskip("xtrack")
+pytest.importorskip("xtrack")
+pytest.importorskip("xpart")
 pytest.importorskip("xobjects")
-Madx = pytest.importorskip("cpymad.madx").Madx
+
+import Animations.save_sequence_SPS as seq_mod  # noqa: E402
+import Animations.BuildSequenceTemplate as build_mod  # noqa: E402
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_SPS_JSON = _REPO_ROOT / "Animations" / "sps_for_sx.json"
+_LHC_Q22_JSON = _REPO_ROOT / "Animations" / "lhc_q22.json"
 
 
-# CERN GitLab sources needed to recreate the SPS sequence used by the example.
-SEQUENCE_URLS = [
-    "https://gitlab.cern.ch/acc-models/acc-models-sps/-/raw/2021/SPS_LS2_2020-05-26.seq",
-    "https://gitlab.cern.ch/acc-models/acc-models-sps/-/raw/2021/strengths/ft_q26_extr.str",
-    "https://gitlab.cern.ch/acc-models/acc-models-sps/-/raw/2021/toolkit/macro.madx",
-    "https://gitlab.cern.ch/acc-models/acc-models-sps/-/raw/2021/aperture/aperturedb_classes.madx",
-    "https://gitlab.cern.ch/acc-models/acc-models-sps/-/raw/2021/aperture/aperturedb_elements.madx",
-]
-
-# Extra MAD-X definitions copied from the SPS example so the imported sequence
-# includes the extraction bump, installed marker and chromaticity knobs.
-EXTRA_MADX_INPUT = """
-extr_bump_knob = 0;
-kMPLH21431 := 4.9e-4 * extr_bump_knob;
-kMPLH21995 := 2.503e-4 * extr_bump_knob;
-kMPLH22195 := -3.5585e-4 * extr_bump_knob;
-kMPNH21732 := 3.3309e-4 * extr_bump_knob;
-kMPSH21202 := -7.6765e-5 * extr_bump_knob;
-
-seqedit, sequence = sps;
-install, element=ap.up.zs21633, class = marker, at=-1 * zs.21633->L/2, from = zs.21633;
-endedit;
-
-LSDA0 = -0.149628261;
-LSDB0 = -0.145613183;
-LSFA0 = 0.063256459;
-LSFB0 = 0.121416689;
-LSFC0 = 0.063256459;
-
-logical.LSDAQPH = .011283;
-logical.LSDBQPH = -.040346;
-logical.LSFAQPH = .04135;
-logical.LSFBQPH = .079565;
-logical.LSFCQPH = .04135;
-
-logical.LSDAQPV = -.11422;
-logical.LSDBQPV = -.08606;
-logical.LSFAQPV = .0097365;
-logical.LSFBQPV = .016931;
-logical.LSFCQPV = .0097365;
-
-kLSDA := logical.LSDAQPH*QPH_setvalue + logical.LSDAQPV*QPV_setvalue + LSDA0;
-kLSDB := logical.LSDBQPH*QPH_setvalue + logical.LSDBQPV*QPV_setvalue + LSDB0;
-kLSFA := logical.LSFAQPH*QPH_setvalue + logical.LSFAQPV*QPV_setvalue + LSFA0;
-kLSFB := logical.LSFBQPH*QPH_setvalue + logical.LSFBQPV*QPV_setvalue + LSFB0;
-kLSFC := logical.LSFCQPH*QPH_setvalue + logical.LSFCQPV*QPV_setvalue + LSFC0;
-"""
+# ---------------------------------------------------------------------------
+# save_sequence_SPS — module-level constants
+# ---------------------------------------------------------------------------
 
 
-def _load_madx_from_cern_gitlab(momentum_gev_c=400.0):
-    # Build a MAD-X instance from the same remote sequence and strengths files
-    # used in the animation example.
-    mad = Madx(stdout=False)
-
-    for url in SEQUENCE_URLS:
-        response = requests.get(url, timeout=30)
-        response.raise_for_status()
-        mad.input(response.text)
-
-    mad.command.beam(particle="PROTON", pc=momentum_gev_c, charge=1)
-    mad.input("BRHO = BEAM->PC * 3.3356;")
-    mad.use(sequence="sps")
-    mad.input(EXTRA_MADX_INPUT)
-    mad.use(sequence="sps")
-    return mad
+def test_sps_model_urls_is_a_list():
+    """SPS_MODEL_URLS must be a list (not a tuple or other iterable)."""
+    assert isinstance(seq_mod.SPS_MODEL_URLS, list)
 
 
-def _build_sps_line_from_gitlab():
-    # Convert the MAD-X sequence into an Xsuite line so Twiss and RF checks can
-    # be performed directly in Python.
-    mad = _load_madx_from_cern_gitlab()
+def test_sps_model_urls_has_five_entries():
+    """Five model files are needed to build the Q26 SPS sequence."""
+    assert len(seq_mod.SPS_MODEL_URLS) == 5
+
+
+def test_sps_model_urls_are_https():
+    """All SPS model URLs must use HTTPS for secure transport."""
+    assert all(url.startswith("https://") for url in seq_mod.SPS_MODEL_URLS)
+
+
+def test_sps_model_urls_are_strings():
+    """Every entry in SPS_MODEL_URLS must be a non-empty string."""
+    assert all(isinstance(url, str) and url for url in seq_mod.SPS_MODEL_URLS)
+
+
+def test_momentum_constant_is_400_GeV():
+    """Beam momentum in save_sequence_SPS must be 400 GeV/c."""
+    assert seq_mod.p == 400.0
+
+
+def test_rigidity_constant_matches_formula():
+    """Magnetic rigidity constant must equal p × 3.3356 T·m."""
+    import math
+    assert math.isclose(seq_mod.Brho, 400.0 * 3.3356, rel_tol=1e-9)
+
+
+# ---------------------------------------------------------------------------
+# save_sequence_SPS — function signatures
+# ---------------------------------------------------------------------------
+
+
+def test_build_sps_madx_is_callable():
+    """build_sps_madx must be a callable function."""
+    assert callable(seq_mod.build_sps_madx)
+
+
+def test_build_sps_madx_accepts_momentum_parameter():
+    """build_sps_madx must accept a momentum_gev_c keyword argument."""
+    sig = inspect.signature(seq_mod.build_sps_madx)
+    assert "momentum_gev_c" in sig.parameters
+
+
+def test_save_sps_json_is_callable():
+    """save_sps_json must be a callable function."""
+    assert callable(seq_mod.save_sps_json)
+
+
+def test_save_sps_json_accepts_output_path_and_momentum():
+    """save_sps_json must accept output_path and momentum_gev_c parameters."""
+    sig = inspect.signature(seq_mod.save_sps_json)
+    assert "output_path" in sig.parameters
+    assert "momentum_gev_c" in sig.parameters
+
+
+# ---------------------------------------------------------------------------
+# BuildSequenceTemplate — module-level constants and functions
+# ---------------------------------------------------------------------------
+
+
+def test_build_template_output_json_is_a_path():
+    """OUTPUT_JSON must be a Path pointing to a .json file."""
+    assert isinstance(build_mod.OUTPUT_JSON, Path)
+    assert build_mod.OUTPUT_JSON.suffix == ".json"
+
+
+def test_build_template_repo_root_is_a_path():
+    """REPO_ROOT must be a Path object."""
+    assert isinstance(build_mod.REPO_ROOT, Path)
+
+
+def test_build_lhc_q22_json_is_callable():
+    """build_lhc_q22_json must be a callable function."""
+    assert callable(build_mod.build_lhc_q22_json)
+
+
+def test_build_lhc_q22_json_returns_path_type():
+    """build_lhc_q22_json's return annotation must be Path."""
+    hints = build_mod.build_lhc_q22_json.__annotations__
+    assert hints.get("return") is Path
+
+
+# ---------------------------------------------------------------------------
+# Pre-built JSON files (if available)
+# ---------------------------------------------------------------------------
+
+
+def test_sps_json_is_valid_json_when_present():
+    """When sps_for_sx.json exists it must be parseable JSON."""
+    if not _SPS_JSON.exists():
+        pytest.skip("sps_for_sx.json not present — run save_sequence_SPS.py first")
+    import json
+    with open(_SPS_JSON) as f:
+        data = json.load(f)
+    assert isinstance(data, dict), "Top-level JSON structure must be a dict"
+
+
+def test_lhc_q22_json_is_valid_json_when_present():
+    """When lhc_q22.json exists it must be parseable JSON."""
+    if not _LHC_Q22_JSON.exists():
+        pytest.skip("lhc_q22.json not present — run BuildSequenceTemplate.py first")
+    import json
+    with open(_LHC_Q22_JSON) as f:
+        data = json.load(f)
+    assert isinstance(data, dict), "Top-level JSON structure must be a dict"
+
+
+# ---------------------------------------------------------------------------
+# Integration tests (network required) — skipped by default
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.slow
+def test_can_build_sps_sequence_from_cern_gitlab():
+    """Smoke test: download SPS model, convert, verify line structure."""
+    Madx = pytest.importorskip("cpymad.madx").Madx
+    xt = pytest.importorskip("xtrack")
+    xp = pytest.importorskip("xpart")
+
+    mad = seq_mod.build_sps_madx(momentum_gev_c=400.0)
     line = xt.Line.from_madx_sequence(
-        mad.sequence["sps"],
-        deferred_expressions=True,
-        allow_thick=True,
+        mad.sequence["sps"], deferred_expressions=True, allow_thick=True
     )
     line.particle_ref = xt.Particles(
-        mass0=xp.PROTON_MASS_EV,
-        gamma0=mad.sequence["sps"].beam.gamma,
+        mass0=xp.PROTON_MASS_EV, gamma0=mad.sequence["sps"].beam.gamma
     )
     line.twiss_default["method"] = "4d"
-    return line
-
-
-def test_can_build_sps_sequence_from_cern_gitlab():
-    # Smoke test: the sequence should load, convert, and expose the expected SPS
-    # line length and reference elements.
-    line = _build_sps_line_from_gitlab()
 
     assert line.particle_ref is not None
     assert line.get_length() > 6000
@@ -104,10 +170,19 @@ def test_can_build_sps_sequence_from_cern_gitlab():
     assert "ap.up.zs21633" in line.element_names
 
 
+@pytest.mark.slow
 def test_rf_setup_supports_6d_twiss_after_sequence_creation():
-    # Recreate the RF configuration from the example and verify that enabling the
-    # cavity produces a valid 6D Twiss solution.
-    line = _build_sps_line_from_gitlab()
+    """After enabling the RF cavity a valid 6-D Twiss solution must exist."""
+    xt = pytest.importorskip("xtrack")
+    xp = pytest.importorskip("xpart")
+
+    mad = seq_mod.build_sps_madx(momentum_gev_c=400.0)
+    line = xt.Line.from_madx_sequence(
+        mad.sequence["sps"], deferred_expressions=True, allow_thick=True
+    )
+    line.particle_ref = xt.Particles(
+        mass0=xp.PROTON_MASS_EV, gamma0=mad.sequence["sps"].beam.gamma
+    )
 
     line.vv["v200"] = 0.0
     line.vv["freq200"] = 200e6
@@ -118,8 +193,7 @@ def test_rf_setup_supports_6d_twiss_after_sequence_creation():
 
     line.vv["v200"] = 10e6
     twiss_6d = line.twiss(method="6d")
-
-    assert twiss_6d.qs > 1e-3
+    assert twiss_6d.qs > 1e-3, "Synchrotron tune must be > 1e-3 for a valid 6-D solution"
 
 
 if __name__ == "__main__":
