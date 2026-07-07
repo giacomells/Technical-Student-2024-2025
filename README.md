@@ -73,25 +73,25 @@ The full study is reported in this article:
 3. Run the test suite:
 
 ```bash
-pytest                         # after conda activate xsuite_env
-# or, without activating:
-./run.sh -m pytest
+pytest                         # A. after conda activate xsuite_env  
+./run.sh -m pytest             # B. without activating
 ```
 
-4. Generate the SPS extraction line (needed for the animation):
+### Animations
+1. Generate the SPS extraction line (needed for the animation):
 
 ```bash
 ./run.sh Animations/save_sequence_SPS.py
 ```
 
-5. Run the phase-space animation:
+2. Run the phase-space animation:
 
 ```bash
 ./run.sh Animations/phaseSpaceAnimation.py
 ```
 
 ### Optional: Notebooks
-To understand better the studies made on the accelerator and on the crystal itself.
+To understand better the studies made on the accelerator and on the crystal itself. The python files used for these studies are in [Crystal Extraction folder](crystal_extraction)
 
 
 ## Testing
