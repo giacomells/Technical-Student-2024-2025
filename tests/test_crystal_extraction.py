@@ -27,7 +27,7 @@ pytest.importorskip("xcoll")
 pytest.importorskip("xtrack")
 
 from crystal_extraction.dummy_crystal import DummyCrystal  # noqa: E402
-from crystal_extraction.plotters import draw_ellipse, ellipse_frm_cov  # noqa: E402
+from crystal_extraction.plotters import draw_ellipse, ellipse_frm_cov, my_mpl_style, subplots  # noqa: E402
 from crystal_extraction.steinbach import BeamArgs, SteinArgs, Steinbach  # noqa: E402
 from crystal_extraction.utils import mux_deg_to_ele, points_inside  # noqa: E402
 import crystal_extraction.xsuite_line_creation as line_mod  # noqa: E402
@@ -110,6 +110,11 @@ class TestMuxDegToEle:
         assert result["start"] > 0
         assert result["mid"] > 0
 
+    def test_target_element_itself_has_zero_phase_advance(self, twiss_df):
+        """Phase advance from an element to itself must be exactly 0 degrees."""
+        result = mux_deg_to_ele(twiss_df, "target", mod=True)
+        assert math.isclose(result["target"], 0.0, abs_tol=1e-12)
+
 
 # ===========================================================================
 # crystal_extraction.plotters
@@ -178,6 +183,44 @@ class TestDrawEllipse:
         plt.close("all")
 
 
+class TestMyMplStyle:
+    """Unit tests for ``my_mpl_style`` and ``subplots`` utility functions."""
+
+    def test_my_mpl_style_sets_label_font_size(self):
+        """my_mpl_style must set axes.labelsize to 16 in rcParams."""
+        import matplotlib as mpl
+        my_mpl_style()
+        assert mpl.rcParams["axes.labelsize"] == 16
+
+    def test_my_mpl_style_sets_white_background(self):
+        """my_mpl_style must set figure.facecolor to white."""
+        import matplotlib as mpl
+        my_mpl_style()
+        assert mpl.rcParams["figure.facecolor"] == "white"
+
+    def test_subplots_returns_figure_and_flattened_axes(self):
+        """subplots must return a Figure and a flat ndarray of Axes."""
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import numpy as np
+        fig, axes = subplots(nrows=2, ncols=3)
+        assert isinstance(fig, plt.Figure)
+        assert isinstance(axes, np.ndarray)
+        assert axes.ndim == 1    # always flattened
+        assert len(axes) == 6
+        plt.close("all")
+
+    def test_subplots_nsubplots_chooses_sensible_grid(self):
+        """When nsubplots is given, the grid must fit all subplots."""
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        fig, axes = subplots(nsubplots=7)
+        assert len(axes) >= 7
+        plt.close("all")
+
+
 # ===========================================================================
 # crystal_extraction.dummy_crystal
 # ===========================================================================
@@ -240,6 +283,11 @@ class TestDummyCrystalKickProperty:
         assert callable(tracker)
         assert crystal.tracker is tracker
 
+    def test_default_kick_is_in_sps_physical_range(self):
+        """Default kick active_length/bending_radius must be in the SPS range (50–300 µrad)."""
+        crystal = DummyCrystal()
+        assert 50e-6 < crystal.mu_kick_chan < 300e-6
+
 
 # ===========================================================================
 # crystal_extraction.steinbach
@@ -264,6 +312,12 @@ class TestBeamArgs:
         args = BeamArgs()
         assert isinstance(args.nparticles, int)
         assert args.nparticles > 0
+
+    def test_default_emit_rms_matches_geometric_emittance_formula(self):
+        """Default emit_rms must equal ε_N / γ = 10e-6 / 426 for a 400 GeV/c proton."""
+        args = BeamArgs()
+        expected = 10e-6 / 426
+        assert math.isclose(args.emit_rms, expected, rel_tol=1e-3)
 
     def test_custom_values_stored_correctly(self):
         """Constructor must store custom values without modification."""
@@ -295,6 +349,13 @@ class TestSteinArgs:
         """approach_side must be +1 or -1."""
         args = SteinArgs()
         assert args.approach_side in (1, -1)
+
+    def test_custom_values_stored_correctly(self):
+        """Constructor must store custom values without modification."""
+        args = SteinArgs(npoints=50, nsigma_emit=5, approach_side=1)
+        assert args.npoints == 50
+        assert math.isclose(args.nsigma_emit, 5)
+        assert args.approach_side == 1
 
 
 class TestSteinbachStaticMethods:
@@ -338,6 +399,14 @@ class TestSteinbachStaticMethods:
         assert len(result) == 4
         for arr in result:
             assert arr.shape == dpps.shape
+
+    def test_points_inside_with_position_offset(self):
+        """Non-zero d0 shifts the position window; particles exactly at d0 must be inside."""
+        # 100 particles sitting at x = d0, inside the shifted window
+        x = np.full(100, 0.5e-3)   # d0
+        xp = np.zeros(100)
+        result = Steinbach._points_inside(x, xp, d_crystal=1e-3, delta_crystal=20e-6, d0=0.5e-3)
+        assert result > 0.0
 
     def test_stein_boundaries_constant_when_zero_dispersion(self):
         """With zero dispersion (dx=dpx=0) boundaries must be independent of dpps."""
