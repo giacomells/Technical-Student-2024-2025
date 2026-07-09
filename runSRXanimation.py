@@ -1,18 +1,21 @@
 from __future__ import annotations
 
-import typing as t
 from pathlib import Path
 
-import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-import numpy as np
-import xobjects as xo
-import xpart as xp
-import xtrack as xt
 from Animations import phaseSpaceAnimation as phase_space_animation
+from Animations.save_sequence_SPS import save_sps_json
 
 
-line = phase_space_animation.configure_line()
+_REPO_ROOT = Path(__file__).resolve().parent
+_SPS_JSON = _REPO_ROOT / "database" / "sps_for_sx.json"
+
+if not _SPS_JSON.exists():
+    saved = save_sps_json(output_path=_SPS_JSON)
+    print(f"Created SPS sequence JSON at {saved}")
+
+
+line = phase_space_animation.configure_line(json_path=_SPS_JSON)
 phase_space_animation.match_extraction_tunes(line)
 tw = line.twiss(continue_on_closed_orbit_error=True)
 
@@ -23,8 +26,9 @@ positions_x, momenta_px = phase_space_animation.track_and_collect(line, particle
 plt.close("all")
 ani = phase_space_animation.build_animation(positions_x, momenta_px, num_turns)
 
-_gif_path = Path(__file__).resolve().parent / "phase_space_animation.gif"
-ani.save(str(_gif_path), writer="pillow", fps=10)
-print(f"Animation saved to {_gif_path}")
+# SAVING THE GIF ANIMATION
+# _gif_path = Path(__file__).resolve().parent / "phase_space_animation.gif"
+# ani.save(str(_gif_path), writer="pillow", fps=10)
+# print(f"Animation saved to {_gif_path}")
 
 plt.show()

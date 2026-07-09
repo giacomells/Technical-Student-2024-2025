@@ -1,20 +1,13 @@
 """
 Build and serialise the SPS Q26 extraction line from CERN GitLab model files.
 
-Run this script once to generate ``sps_for_sx.json``; the JSON file is then
-read by ``phaseSpaceAnimation.py`` without requiring a network connection.
-
-Usage
------
-    python save_sequence_SPS.py [output_path]
-
-If *output_path* is omitted the JSON is written to the same directory as
-this script (``<Animations>/sps_for_sx.json``).
+Use save_sps_json() from an application script to generate
+database/sps_for_sx.json, which can then be loaded without a network
+connection.
 """
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import requests
@@ -130,8 +123,8 @@ def save_sps_json(
     Parameters
     ----------
     output_path : Path or None
-        Destination file.  Defaults to ``sps_for_sx.json`` in the same
-        directory as this script.
+        Destination file.  Defaults to ``database/sps_for_sx.json`` at the
+        repository root.
     momentum_gev_c : float
         Proton beam momentum [GeV/c].
 
@@ -141,8 +134,9 @@ def save_sps_json(
         Absolute path of the written JSON file.
     """
     if output_path is None:
-        output_path = Path(__file__).resolve().parent / "sps_for_sx.json"
+        output_path = Path(__file__).resolve().parent.parent / "database" / "sps_for_sx.json"
     output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     mad = build_sps_madx(momentum_gev_c)
 
@@ -170,9 +164,3 @@ def save_sps_json(
 
     line.to_json(str(output_path))
     return output_path
-
-
-if __name__ == "__main__":
-    dest = Path(sys.argv[1]) if len(sys.argv) > 1 else None
-    saved = save_sps_json(dest)
-    print(saved)
