@@ -244,26 +244,4 @@ def build_animation(
     return animation.FuncAnimation(fig, update, frames=num_turns, repeat=True)
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    line = configure_line()
-    match_extraction_tunes(line)
-    tw = line.twiss(continue_on_closed_orbit_error=True)
-
-    particles = generate_particles(line, tw, n_part=1000)
-    num_turns = 100
-    positions_x, momenta_px = track_and_collect(line, particles, num_turns)
-
-    plt.close("all")
-    ani = build_animation(positions_x, momenta_px, num_turns)
-
-    _gif_path = Path(__file__).resolve().parent / "phase_space_animation.gif"
-    ani.save(str(_gif_path), writer="pillow", fps=10)
-    print(f"Animation saved to {_gif_path}")
-
-    plt.show()
-
 

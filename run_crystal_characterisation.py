@@ -1,31 +1,4 @@
-"""
-run_crystal_characterisation.py
-================================
-Sweep crystal bending radius and kick angle, track single-pass particles,
-fit the angular-kick distribution with a double Gaussian, and report
-channeling/loss fractions both on the terminal and as saved plots.
-
-Method (from crystal_parametrisation.ipynb)
---------------------------------------------
-1. Build a DummyCrystal -> EverestCrystal (xcoll) for each configuration.
-2. Fire n_particles perfectly-aligned particles through it.
-3. Separate lost vs surviving particles; discard unphysical large-angle tail.
-4. Fit the px histogram with gauss_amorphous + gauss_channeled.
-5. Classify surviving particles into: channeled / amorphous / dechanneled.
-6. Print a compact table per configuration; save all plots.
-
-Usage
------
-    python run_crystal_characterisation.py
-    python run_crystal_characterisation.py --n-particles 20000
-    python run_crystal_characterisation.py --output-dir results/crystal
-
-Requirements
-------------
-    xsuite + xcoll environment (xsuite_env)
-    No network access or JSON file needed — DummyCrystal is standalone.
-"""
-from __future__ import annotations
+import annotations
 
 import argparse
 import sys
