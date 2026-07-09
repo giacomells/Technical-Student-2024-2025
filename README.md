@@ -36,7 +36,7 @@ selection is needed:
 |---|---|
 | **VS Code** | `install.sh` writes `.vscode/settings.json` just press ▶ Run |
 | **Terminal** (one-time per session) | `conda activate xsuite_env`, then `python script.py` as usual |
-| **Terminal** (no activation) | `./run.sh Animations/save_sequence_SPS.py` or `./run.sh -m pytest` |
+| **Terminal** (*recomended*) | `./run.sh file.py` or `./run.sh -m pytest` |
 
 #### Manual setup
 
@@ -57,10 +57,8 @@ pip install -r requirements.txt
 ## Documentation
 
 Full documentation lives in `docs/`:
+[Theory and background](docs/theory.md) — physics of slow extraction and crystal channeling
 
-- [Theory and background](docs/theory.md) — physics of slow extraction and crystal channeling
-- [API reference](docs/api.md) — functions and constants in `elements.py` / `optimisers.py`
-- [How-to guide](docs/howto.md) — step-by-step instructions for running each study
 
 The full study is reported in this article:
 [Technical Report 2025 — Slow Extraction with Crystals](docs/TechnicalReport2025SlowExtractionWithCrystal.pdf)
