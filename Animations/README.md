@@ -10,7 +10,7 @@ This directory contains scripts for generating SPS extraction animations and for
 
 ### Usage notes
 
-- `phaseSpaceAnimation.py` expects `sps_for_sx.json` to be present in this same directory.
+- `phaseSpaceAnimation.py` expects `sps_for_sx.json`.
 - Run `save_sequence_SPS.py` first if the JSON sequence has not been generated yet.
 - `save_sequence_SPS.py` depends on CERN model files fetched over the network.
 
