@@ -14,12 +14,6 @@ imparts a channeling kick.  Particles that clear the MST blade
 (x < MST_X0 - MST_DX/2, state=-42) are extracted; particles hitting
 the blade (|x - MST_X0| < MST_DX/2, state=-1) are flagged as lost.
 
-Usage
------
-    python run_extraction_simulation.py
-    python run_extraction_simulation.py --n-particles 2000
-    python run_extraction_simulation.py --output-dir results/
-
 Requirements
 ------------
     xsuite + xcoll environment (xsuite_env)
