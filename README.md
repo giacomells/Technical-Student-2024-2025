@@ -77,9 +77,15 @@ pytest                         # A. after conda activate xsuite_env
 ./run.sh -m pytest             # B. without activating
 ```
 
+4. Run on of the .py files in the home directory:
+```bash
+./run.sh run_crystal_characterisation.py
+./run.sh runSRXanimation.py
+./run.sh runSXwithCrystal.py
+```
 
 
-## Testing
+### Testing
 
 Tests live in `tests/` and are executed with `pytest`:
 
