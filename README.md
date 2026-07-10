@@ -82,6 +82,8 @@ pytest                         # A. after conda activate xsuite_env
 ./run.sh runSXwithCrystal.py
 ```
 
+![Phase space animation](outputs/phase_space_animation.gif)
+
 
 ### Testing
 
